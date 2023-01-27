@@ -33,7 +33,7 @@ var (
 	AvatarPath  string
 )
 
-func init() {
+func Init() {
 	file, err := ini.Load("./conf/config.ini")
 	if err != nil {
 		fmt.Println("配置文件错误", err)
@@ -43,9 +43,9 @@ func init() {
 	LoadRedis(file)
 	LoadEmail(file)
 	LoadPhotoPath(file)
-	pathRead := strings.Join([]string{DbUser, ":", DbPassWord, "@tcp{", DbHost, ":", DbPort, "}/", DbName, "?charset=utf8&parseTime=true"}, "")
+	pathRead := strings.Join([]string{DbUser, ":", DbPassWord, "@tcp(", DbHost, ":", DbPort, ")/", DbName, "?charset=utf8&parseTime=true"}, "")
 
-	pathWrite := strings.Join([]string{DbUser, ":", DbPassWord, "@tcp{", DbHost, ":", DbPort, "}/", DbName, "?charset=utf8&parseTime=true"}, "")
+	pathWrite := strings.Join([]string{DbUser, ":", DbPassWord, "@tcp(", DbHost, ":", DbPort, ")/", DbName, "?charset=utf8&parseTime=true"}, "")
 	dao.DateBase(pathRead, pathWrite)
 }
 func LoadServer(file *ini.File) {

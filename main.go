@@ -1,7 +1,7 @@
 package main
 
-import "fmt"
+import "GOproject/GIT/conf"
 
 func main() {
-	fmt.Println()
+	conf.Init()
 }
