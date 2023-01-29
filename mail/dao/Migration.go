@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"GOproject/GIT/model"
+	"GOproject/GIT/mail/model"
 	"fmt"
 )
 

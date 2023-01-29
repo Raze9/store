@@ -1,7 +1,7 @@
 package conf
 
 import (
-	"GOproject/GIT/dao"
+	"GOproject/GIT/mail/dao"
 	"fmt"
 	"gopkg.in/ini.v1"
 	"strings"
