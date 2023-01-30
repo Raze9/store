@@ -9,46 +9,58 @@ import (
 	"context"
 )
 
-type UserRegister struct {
-	Nickname string `json:"nickname"form:"nick_name"`
-	UserName string `json:"username"form:"user_name"`
-	PassWord string `json:"password"form:"password"`
-	key      string `json:"key"form:"key"`
+type UserService struct {
+	NickName string `form:"nick_name" json:"nick_name"`
+	UserName string `form:"user_name" json:"user_name"`
+	Password string `form:"password" json:"password"`
+	Key      string `form:"key" json:"key"` // 前端进行判断
 }
 
-func (service UserRegister) Register(ctx context.Context) serializer.Response {
-	var user model.User
+func (service *UserService) Register(ctx context.Context) serializer.Response {
+	var user *model.User
 	code := e.Success
-	if service.key == "" || len(service.key) != 16 {
+	if service.Key == "" { //此处无法判断==len(service.key)
 		code = e.Error
 		return serializer.Response{
 			Status:  code,
 			Message: e.GetMsg(code),
-			Error:   "密码长度不足",
+			Data:    "密码长度不足",
 		}
 	}
-	util.Encrypt.SetKey(service.key)
+	//密码加密
+	util.Encrypt.SetKey(service.Key)
 	userDao := dao.NewUserDao(ctx)
 	_, exist, err := userDao.ExistOrNotByUserName(service.UserName)
 	if err != nil {
 		code = e.Error
-		return serializer.Response{Status: code, Message: e.GetMsg(code)}
+		return serializer.Response{
+			Status:  code,
+			Message: e.GetMsg(code),
+		}
 	}
 	if exist {
 		code = e.ErrorExit
-		return serializer.Response{Status: code, Message: e.GetMsg(code)}
+		return serializer.Response{
+			Status:  code,
+			Message: e.GetMsg(code),
+		}
 	}
-	user = model.User{UserName: service.UserName, NickName: service.Nickname, Status: model.Active,
-		Avatar: "knoachan.jpg", Money: util.Encrypt.AesEncoding("10000")}
+	user = &model.User{
+		NickName: service.NickName,
+		UserName: service.UserName,
+		Status:   model.Active,
+		Avatar:   "knoachan.jpg",
+		Money:    util.Encrypt.AesEncoding("10000"),
+	}
 
-	if err = user.SetPassword(service.PassWord); err != nil {
+	if err = user.SetPassword(service.Password); err != nil {
 		code = e.ErrorFailEncryption
 		return serializer.Response{
 			Status:  code,
 			Message: e.GetMsg(code),
 		}
 	}
-	err = userDao.CreateUser(&user)
+	err = userDao.CreateUser(user)
 	if err != nil {
 		code = e.Error
 	}
@@ -56,4 +68,8 @@ func (service UserRegister) Register(ctx context.Context) serializer.Response {
 		Status:  code,
 		Message: e.GetMsg(code),
 	}
+}
+
+func (service *UserService) Login(ctx context.Context) {
+
 }

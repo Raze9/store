@@ -9,6 +9,7 @@ import (
 
 var Encrypt *Encryption
 
+// AES 加密算法
 type Encryption struct {
 	key string
 }
@@ -16,9 +17,12 @@ type Encryption struct {
 func init() {
 	Encrypt = NewEncryption()
 }
+
 func NewEncryption() *Encryption {
 	return &Encryption{}
 }
+
+// 填充密码长度
 func PadPwd(srcByte []byte, blockSize int) []byte {
 	padNum := blockSize - len(srcByte)%blockSize
 	ret := bytes.Repeat([]byte{byte(padNum)}, padNum)

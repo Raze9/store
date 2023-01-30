@@ -3,24 +3,26 @@ package dao
 import (
 	"GOproject/GIT/mail/model"
 	"fmt"
+	"os"
 )
 
 func Migration() {
+	//自动迁移模式
 	err := _db.Set("gorm:table_options", "charset=utf8mb4").AutoMigrate(
 		&model.User{},
-		&model.Address{},
-		&model.Admin{},
+		&model.Product{},
 		&model.Carousel{},
 		&model.Category{},
-		&model.Cart{},
-		&model.Notice{},
-		&model.Product{},
-		&model.ProductImg{},
 		&model.Favorite{},
+		&model.ProductImg{},
 		&model.Order{},
-	)
+		&model.Cart{},
+		&model.Admin{},
+		&model.Address{},
+		&model.Notice{})
 	if err != nil {
-		fmt.Println("err", err)
+		fmt.Println("register table fail")
+		os.Exit(0)
 	}
-	return
+	fmt.Println("register table success")
 }

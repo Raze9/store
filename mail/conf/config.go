@@ -49,7 +49,7 @@ func Init() {
 	dao.DateBase(pathRead, pathWrite)
 }
 func LoadServer(file *ini.File) {
-	AppMode = file.Section("service").Key("Appmode").String()
+	AppMode = file.Section("service").Key("AppMode").String()
 	HttpPort = file.Section("service").Key("HttpPort").String()
 }
 func LoadMysql(file *ini.File) {

@@ -17,14 +17,19 @@ func NewUserDaoByDB(db *gorm.DB) *UserDao {
 	return &UserDao{db}
 }
 
-func (dao *UserDao) CreateUser(user *model.User) (err error) {
+func (dao *UserDao) CreateUser(user *model.User) error {
 	return dao.DB.Model(&model.User{}).Create(&user).Error
 }
 
 // 根据username判断是否有该名字
 func (dao *UserDao) ExistOrNotByUserName(userName string) (user *model.User, exist bool, err error) {
-	err = dao.DB.Model(&model.User{}).Where("user_name=?", userName).Find(&user).Error
-	if err == nil || err == gorm.ErrRecordNotFound {
+	var count int64
+	err = dao.DB.Model(&model.User{}).Where("user_name=?", userName).Count(&count).Error
+	if count == 0 {
+		return user, false, err
+	}
+	err = dao.DB.Model(&model.User{}).Where("user_name=?", userName).First(&user).Error
+	if err != nil {
 		return user, false, err
 	}
 	return user, true, nil

@@ -42,8 +42,8 @@ func DateBase(connRead, connWrite string) {
 	sqlDb.SetConnMaxLifetime(time.Second * 30)
 	_db = db
 	_ = _db.Use(dbresolver.Register(dbresolver.Config{
-		Sources:  []gorm.Dialector{mysql.Open(connWrite)},
-		Replicas: []gorm.Dialector{mysql.Open(connRead), mysql.Open(connRead)},
+		Sources:  []gorm.Dialector{mysql.Open(connRead)},
+		Replicas: []gorm.Dialector{mysql.Open(connWrite), mysql.Open(connWrite)},
 		Policy:   dbresolver.RandomPolicy{},
 	}))
 	Migration()

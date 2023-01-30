@@ -10,8 +10,9 @@ var MsgFlags = map[int]string{
 
 func GetMsg(code int) string {
 	msg, ok := MsgFlags[code]
-	if !ok {
-		return MsgFlags[Error]
+	if ok {
+		return msg
 	}
-	return msg
+	return MsgFlags[Error]
+
 }
