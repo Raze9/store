@@ -36,6 +36,7 @@ func (service *UserService) Register(ctx context.Context) serializer.Response {
 		return serializer.Response{
 			Status:  code,
 			Message: e.GetMsg(code),
+			Data:    "用户不存在",
 		}
 	}
 	if exist {
@@ -49,7 +50,7 @@ func (service *UserService) Register(ctx context.Context) serializer.Response {
 		NickName: service.NickName,
 		UserName: service.UserName,
 		Status:   model.Active,
-		Avatar:   "knoachan.jpg",
+		Avatar:   "ava.jpg",
 		Money:    util.Encrypt.AesEncoding("10000"),
 	}
 
@@ -70,6 +71,38 @@ func (service *UserService) Register(ctx context.Context) serializer.Response {
 	}
 }
 
-func (service *UserService) Login(ctx context.Context) {
-
+func (service *UserService) Login(ctx context.Context) serializer.Response {
+	var user *model.User
+	code := e.Success
+	userDao := dao.NewUserDao(ctx)
+	user, exist, err := userDao.ExistOrNotByUserName(service.UserName)
+	if !exist || err != nil {
+		code = e.ErrorExitNotFound
+		return serializer.Response{
+			Status:  code,
+			Message: e.GetMsg(code),
+		}
+	}
+	if user.CheckPassword(service.Password) == false {
+		code = e.ErrorNotCompara
+		return serializer.Response{
+			Status:  code,
+			Message: e.GetMsg(code),
+			Data:    "密码错误",
+		}
+	}
+	token, err := util.GenerateToken(user.ID, service.UserName, 0)
+	if err != nil {
+		code := e.ErrorAuthToken
+		return serializer.Response{
+			Status:  code,
+			Message: e.GetMsg(code),
+			Data:    "token验证失败",
+		}
+	}
+	return serializer.Response{
+		Status:  code,
+		Message: e.GetMsg(code),
+		Data:    serializer.TokenData{User: serializer.BuildUser(user), Token: token},
+	}
 }

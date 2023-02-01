@@ -6,4 +6,7 @@ const (
 	InvalidParams       = 400
 	ErrorExit           = 30001
 	ErrorFailEncryption = 30002
+	ErrorExitNotFound   = 30003
+	ErrorNotCompara     = 30004
+	ErrorAuthToken      = 30005
 )
