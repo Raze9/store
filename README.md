@@ -1,5 +1,5 @@
 # store
-**gin+gorm+mysql读写分离 的一个电子商场**
+**gin+gorm+mysql 的一个电子商场**
 
 # 项目结构
 ```
