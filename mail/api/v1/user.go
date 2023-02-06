@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"GOproject/GIT/mail/pkg/util"
 	"GOproject/GIT/mail/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -24,4 +25,27 @@ func UserLogin(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusNotFound, err)
 	}
+}
+func UserUpdate(c *gin.Context) {
+	var userUpdate service.UserService
+	claims, _ := util.ParseToken(c.GetHeader("Authorization"))
+	if err := c.ShouldBind(&userUpdate); err == nil {
+		res := userUpdate.Update(c.Request.Context(), claims.Id)
+		c.JSON(http.StatusOK, res)
+	} else {
+		c.JSON(http.StatusNotFound, err)
+	}
+}
+func UploadAvatar(c *gin.Context) {
+	file, fileHeader, _ := c.Request.FormFile("file")
+	filesize := fileHeader.Size
+	var uploadAvatar service.UserService
+	claims, _ := util.ParseToken(c.GetHeader("Authorization"))
+	if err := c.ShouldBind(&uploadAvatar); err == nil {
+		res := uploadAvatar.Post(c.Request.Context(), claims.Id, file, filesize)
+		c.JSON(http.StatusOK, res)
+	} else {
+		c.JSON(http.StatusNotFound, err)
+	}
+
 }
