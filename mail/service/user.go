@@ -7,6 +7,7 @@ import (
 	"GOproject/GIT/mail/pkg/util"
 	"GOproject/GIT/mail/serializer"
 	"context"
+	"mime/multipart"
 )
 
 type UserService struct {
@@ -105,4 +106,70 @@ func (service *UserService) Login(ctx context.Context) serializer.Response {
 		Message: e.GetMsg(code),
 		Data:    serializer.TokenData{User: serializer.BuildUser(user), Token: token},
 	}
+}
+
+func (service UserService) Update(ctx context.Context, uid uint) serializer.Response {
+	var user *model.User
+	var err error
+	code := e.Success
+	userDao := dao.NewUserDao(ctx)
+	user, err = userDao.GetuserbyId(uid)
+	if service.NickName != "" {
+		user.NickName = service.NickName
+	}
+	err = userDao.UpdateUserbyId(uid, user)
+	if err != nil {
+		code = e.Error
+		return serializer.Response{
+			Status:  code,
+			Message: e.GetMsg(code),
+			Error:   err.Error(),
+		}
+	}
+	return serializer.Response{
+		Status:  code,
+		Message: e.GetMsg(code),
+		Data:    serializer.BuildUser(user),
+	}
+}
+func (service *UserService) Post(ctx context.Context, uid uint, file multipart.File, filesize int64) serializer.Response {
+	code := e.Success
+	var (
+		user *model.User
+		err  error
+	)
+	userDao := dao.NewUserDao(ctx)
+	user, err = userDao.GetuserbyId(uid)
+	if err != nil {
+		return serializer.Response{
+			Status:  code,
+			Message: e.GetMsg(code),
+			Error:   err.Error(),
+		}
+	}
+	path, err := UploadStatic(file, uid, user.UserName)
+	if err != nil {
+		code = e.ErrorUploadErr
+		return serializer.Response{
+			Status:  code,
+			Message: e.GetMsg(code),
+			Error:   err.Error(),
+		}
+	}
+	user.Avatar = path
+	err = userDao.UpdateUserbyId(uid, user)
+	if err != nil {
+		code = e.Error
+		return serializer.Response{
+			Status:  code,
+			Message: e.GetMsg(code),
+			Error:   err.Error(),
+		}
+	}
+	return serializer.Response{
+		Status:  code,
+		Message: e.GetMsg(code),
+		Data:    serializer.BuildUser(user),
+	}
+
 }
