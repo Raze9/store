@@ -49,3 +49,24 @@ func UploadAvatar(c *gin.Context) {
 	}
 
 }
+
+func SendEmail(c *gin.Context) {
+	var sendemail service.SendEmailService
+	claims, _ := util.ParseToken(c.GetHeader("Authorization"))
+	if err := c.ShouldBind(&sendemail); err == nil {
+		res := sendemail.Send(c.Request.Context(), claims.Id)
+		c.JSON(http.StatusOK, res)
+	} else {
+		c.JSON(http.StatusNotFound, err)
+	}
+}
+
+func ValidEmail(c *gin.Context) {
+	var validEmail service.ValidEmailService
+	if err := c.ShouldBind(&validEmail); err == nil {
+		res := validEmail.Valid(c.Request.Context(), c.GetHeader("Authorization"))
+		c.JSON(http.StatusOK, res)
+	} else {
+		c.JSON(http.StatusNotFound, err)
+	}
+}
