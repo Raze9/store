@@ -17,6 +17,7 @@ func NewUserDaoByDB(db *gorm.DB) *UserDao {
 	return &UserDao{db}
 }
 
+// 创建
 func (dao *UserDao) CreateUser(user *model.User) error {
 	return dao.DB.Model(&model.User{}).Create(&user).Error
 }
@@ -34,10 +35,14 @@ func (dao *UserDao) ExistOrNotByUserName(userName string) (user *model.User, exi
 	}
 	return user, true, nil
 }
+
+// 根据id获取user
 func (dao *UserDao) GetuserbyId(id uint) (user *model.User, err error) {
 	err = dao.DB.Model(&model.User{}).Where("id=?", id).First(&user).Error
 	return
 }
+
+// 根据id更新user
 func (dao *UserDao) UpdateUserbyId(uid uint, user *model.User) error {
 	return dao.DB.Model(&model.User{}).Where("id=?", uid).Updates(&user).Error
 
