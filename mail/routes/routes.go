@@ -10,7 +10,6 @@ import (
 func NewRouter() *gin.Engine {
 	r := gin.Default()
 	r.Use(middleware.Cors())
-	r.StaticFS("/static", http.Dir("./static"))
 	v1 := r.Group("/api/v1")
 	{
 		v1.GET("ping", func(c *gin.Context) {
@@ -23,6 +22,8 @@ func NewRouter() *gin.Engine {
 		{
 			authed.PUT("user", API.UserUpdate)
 			authed.POST("avatar", API.UploadAvatar)
+			authed.POST("user/sendemail", API.SendEmail)
+			authed.POST("user/validemail", API.ValidEmail)
 		}
 	}
 	return r
