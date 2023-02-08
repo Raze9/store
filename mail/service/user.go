@@ -16,6 +16,9 @@ import (
 
 type ValidEmailService struct {
 }
+type ShowMoneyService struct {
+	Key string `json:"key"form:"key"`
+}
 
 type SendEmailService struct {
 	Email         string `json:"email"form:"email"`
@@ -24,10 +27,10 @@ type SendEmailService struct {
 }
 
 type UserService struct {
-	NickName string `form:"nick_name" json:"nick_name"`
-	UserName string `form:"user_name" json:"user_name"`
-	Password string `form:"password" json:"password"`
-	Key      string `form:"key" json:"key"` // 前端进行判断
+	NickName string ` json:"nick_name"form:"nick_name"`
+	UserName string ` json:"user_name"form:"user_name"`
+	Password string ` json:"password"form:"password"`
+	Key      string `json:"key"form:"key" ` // 前端进行判断
 }
 
 // 注册
@@ -83,6 +86,7 @@ func (service *UserService) Register(ctx context.Context) serializer.Response {
 	return serializer.Response{
 		Status:  code,
 		Message: e.GetMsg(code),
+		Data:    "注册成功",
 	}
 }
 
@@ -305,5 +309,24 @@ func (service *ValidEmailService) Valid(ctx context.Context, token string) seria
 		Status:  code,
 		Message: e.GetMsg(code),
 		Data:    serializer.BuildUser(user),
+	}
+}
+
+func (service *ShowMoneyService) Show(ctx context.Context, uid uint) serializer.Response {
+	code := e.Success
+	userDao := dao.NewUserDao(ctx)
+	user, err := userDao.GetuserbyId(uid)
+	if err != nil {
+		code = e.Error
+		return serializer.Response{
+			Status:  code,
+			Message: e.GetMsg(code),
+			Error:   err.Error(),
+		}
+	}
+	return serializer.Response{
+		Status:  code,
+		Message: e.GetMsg(code),
+		Data:    serializer.BuildMoney(user, service.Key),
 	}
 }
